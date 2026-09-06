@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dua Asghar Mughal — AI and Machine Learning Engineer</title>
+<meta name="description" content="Portfolio of Dua Asghar Mughal, an artificial intelligence and machine learning engineer, with live in browser demos of a portfolio search chat, an image classifier, a translator and a semantic analyzer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bg: #faf6ee;
+    --bg-panel: #f2ebdb;
+    --bg-card: #ffffff;
+    --line: #e2d8c3;
+    --line-soft: #ece3d0;
+    --ink: #211b14;
+    --ink-muted: #6c6153;
+    --ink-faint: #948a79;
+
+    --terracotta: #b8481d;
+    --indigo: #33418c;
+    --teal: #0f7a68;
+    --ochre: #a6790a;
+
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Inter', sans-serif;
+    --max-width: 1080px;
+    --edge: clamp(24px, 6vw, 96px);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html{ scroll-behavior: smooth; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  body{
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a{ color: inherit; }
+
+  #bg-canvas{
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  ::selection{
+    background: var(--indigo);
+    color: #ffffff;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible{
+    outline: 2px solid var(--indigo);
+    outline-offset: 3px;
+  }
+
+  /* ---------------------------------- */
+  /* Scroll reveal utilities             */
+  /* ---------------------------------- */
+
+  .reveal{
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.7s cubic-bezier(0.2,0.6,0.2,1), transform 0.7s cubic-bezier(0.2,0.6,0.2,1);
+  }
+
+  .reveal.in-view{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .stagger > *{
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.6s cubic-bezier(0.2,0.6,0.2,1), transform 0.6s cubic-bezier(0.2,0.6,0.2,1);
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+
+  .stagger.in-view > *{
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ---------------------------------- */
+  /* Magnetic pointer effect             */
+  /* ---------------------------------- */
+
+  .magnetic{
+    transition: transform 0.25s cubic-bezier(0.2,0.8,0.2,1);
+    will-change: transform;
+  }
+
+  /* ---------------------------------- */
+  /* Layout helpers                      */
+  /* ---------------------------------- */
+
+  .wrap{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding-left: var(--edge);
+    padding-right: var(--edge);
+  }
+
+  section{
+    padding-top: clamp(64px, 10vw, 120px);
+    padding-bottom: clamp(64px, 10vw, 120px);
+  }
+
+  .section-heading{
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(28px, 3.4vw, 40px);
+    letter-spacing: -0.01em;
+    margin: 0 0 12px 0;
+    color: var(--ink);
+  }
+
+  .section-lede{
+    color: var(--ink-muted);
+    max-width: 62ch;
+    margin: 0 0 48px 0;
+    font-size: 17px;
+  }
+
+  .rule{
+    border: none;
+    border-top: 1px solid var(--line-soft);
+    margin: 0;
+  }
+
+  /* ---------------------------------- */
+  /* Nav                                 */
+  /* ---------------------------------- */
+
+  header.site-nav{
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250, 246, 238, 0.88);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .nav-inner{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 18px var(--edge);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-name{
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .nav-links{
+    display: flex;
+    gap: 26px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-links a{
+    text-decoration: none;
+    color: var(--ink-muted);
+    font-size: 14.5px;
+    transition: color 0.15s ease;
+  }
+
+  .nav-links a:hover{
+    color: var(--terracotta);
+  }
+
+  .nav-toggle{
+    display: none;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    width: 38px;
+    height: 38px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+
+  @media (max-width: 720px){
+    .nav-links{
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      flex-direction: column;
+      gap: 0;
+      border-bottom: 1px solid var(--line-soft);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease;
+    }
+    .nav-links.open{ max-height: 320px; }
+    .nav-links a{
+      display: block;
+      padding: 16px var(--edge);
+      border-top: 1px solid var(--line-soft);
+    }
+    .nav-toggle{ display: block; }
+  }
+
+  /* ---------------------------------- */
+  /* Hero                                */
+  /* ---------------------------------- */
+
+  .hero{
+    padding-top: clamp(56px, 9vw, 96px);
+    padding-bottom: clamp(48px, 8vw, 80px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #hero-canvas{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+  }
+
+  .hero-grid{
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(32px, 6vw, 64px);
+    align-items: center;
+  }
+
+  @media (max-width: 860px){
+    .hero-grid{ grid-template-columns: 1fr; }
+    .hero-visual{ order: -1; max-width: 320px; margin: 0 auto; }
+  }
+
+  .eyebrow-location{
+    color: var(--ink-faint);
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+
+  .hero h1{
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(40px, 6.4vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 20px 0;
+    color: var(--ink);
+  }
+
+  .hero-role{
+    font-size: clamp(17px, 2vw, 20px);
+    color: var(--ink-muted);
+    max-width: 48ch;
+    margin: 0 0 36px 0;
+  }
+
+  .hero-role strong{
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .hero-actions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+
+  .btn{
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 3px;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btn-solid{
+    background: var(--indigo);
+    color: #ffffff;
+  }
+
+  .btn-solid:hover{ background: #28356f; }
+
+  @keyframes btnPulse{
+    0%, 100% { box-shadow: 0 0 0 0 rgba(51,65,140,0.35); }
+    50% { box-shadow: 0 0 0 10px rgba(51,65,140,0); }
+  }
+
+  .btn-pulse{
+    animation: btnPulse 2.6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .btn-pulse{ animation: none; }
+  }
+
+  .btn-outline{
+    border: 1px solid var(--line);
+    color: var(--ink);
+    background: var(--bg-card);
+  }
+
+  .btn-outline:hover{ border-color: var(--terracotta); color: var(--terracotta); }
+
+  .stat-row{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px 24px;
+    border-top: 1px solid var(--line-soft);
+    padding-top: 28px;
+  }
+
+  .stat{
+    padding-right: 20px;
+    border-right: 1px solid var(--line-soft);
+  }
+
+  .stat:nth-child(4n){ border-right: none; padding-right: 0; }
+
+  @media (max-width: 480px){
+    .stat-row{ grid-template-columns: repeat(2, 1fr); }
+    .stat{ border-right: none; padding-right: 0; border-bottom: 1px solid var(--line-soft); padding-bottom: 16px; }
+    .stat:nth-last-child(-n+2){ border-bottom: none; padding-bottom: 0; }
+  }
+
+  .stat-number{
+    font-family: var(--font-display);
+    font-size: clamp(22px, 2.6vw, 30px);
+    color: var(--terracotta);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label{
+    font-size: 13px;
+    color: var(--ink-faint);
+    max-width: 16ch;
+  }
+
+  .hero-visual{ position: relative; }
+
+  .photo-frame{
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    background: var(--bg-panel);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .photo-frame img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-placeholder{
+    font-family: var(--font-display);
+    font-size: clamp(48px, 8vw, 84px);
+    color: var(--line);
+    letter-spacing: 0.02em;
+  }
+
+  /* ---------------------------------- */
+  /* About                               */
+  /* ---------------------------------- */
+
+  .about-grid{
+    display: grid;
+    grid-template-columns: 0.4fr 0.6fr;
+    gap: clamp(32px, 6vw, 72px);
+  }
+
+  @media (max-width: 780px){ .about-grid{ grid-template-columns: 1fr; } }
+
+  .about-copy p{
+    color: var(--ink-muted);
+    font-size: 17px;
+    margin: 0 0 20px 0;
+  }
+
+  .about-copy p:last-child{ margin-bottom: 0; }
+
+  .about-copy strong{ color: var(--ink); font-weight: 500; }
+
+  /* ---------------------------------- */
+  /* Skills                              */
+  /* ---------------------------------- */
+
+  .skills-grid{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px 64px;
+  }
+
+  @media (max-width: 720px){ .skills-grid{ grid-template-columns: 1fr; } }
+
+  .skill-group-title{
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--ink);
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .skill-tags{
+    display: flex;
+    flex-wrap: wrap;
+    color: var(--ink-muted);
+    font-size: 15px;
+    line-height: 2.1;
+  }
+
+  .skill-tags span{ white-space: nowrap; }
+
+  .skill-tags span:not(:last-child)::after{
+    content: '\00b7';
+    color: var(--terracotta);
+    margin: 0 10px;
+  }
+
+  /* ---------------------------------- */
+  /* Interactive demos                   */
+  /* ---------------------------------- */
+
+  .demo-tabs{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .demo-tab{
+    font-family: var(--font-body);
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    color: var(--ink-muted);
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+
+  .demo-tab:hover{ border-color: var(--terracotta); color: var(--ink); }
+
+  .demo-tab.is-active{
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+    font-weight: 500;
+  }
+
+  .demo-panel{ display: none; }
+  .demo-panel.is-active{ display: block; }
+
+  .demo-card{
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--indigo);
+    border-radius: 8px;
+    padding: clamp(24px, 4vw, 40px);
+  }
+
+  .demo-card-vision{ border-top-color: var(--ochre); }
+  .demo-card-nlp{ border-top-color: var(--teal); }
+
+  .demo-desc{
+    color: var(--ink-muted);
+    font-size: 15.5px;
+    margin: 0 0 24px 0;
+    max-width: 68ch;
+  }
+
+  .demo-input-row{
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .demo-input-row input[type="text"],
+  .demo-card textarea,
+  .demo-card select{
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--bg);
+    color: var(--ink);
+    width: 100%;
+  }
+
+  .demo-input-row input[type="text"]{ flex: 1 1 240px; }
+
+  .demo-card textarea{
+    resize: vertical;
+    margin-bottom: 14px;
+    display: block;
+  }
+
+  .demo-card select{ max-width: 220px; margin-bottom: 14px; }
+
+  .btn-demo{
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    font-weight: 500;
+    padding: 12px 22px;
+    border-radius: 5px;
+    border: none;
+    background: var(--ink);
+    color: var(--bg);
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+  }
+
+  .btn-demo:hover:not(:disabled){ background: var(--indigo); }
+
+  .btn-demo:disabled{ opacity: 0.45; cursor: not-allowed; }
+
+  .demo-status{
+    font-size: 13px;
+    color: var(--ink-faint);
+    margin: 14px 0 0 0;
+  }
+
+  /* Chat / RAG search demo */
+
+  .demo-chat-log{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 280px;
+    overflow-y: auto;
+    margin-bottom: 16px;
+  }
+
+  .chat-bubble{
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    max-width: 85%;
+  }
+
+  .chat-bubble-you{
+    align-self: flex-end;
+    background: var(--indigo);
+    color: #ffffff;
+    border-bottom-right-radius: 2px;
+  }
+
+  .chat-bubble-bot{
+    align-self: flex-start;
+    background: var(--bg-panel);
+    color: var(--ink);
+    border-bottom-left-radius: 2px;
+  }
+
+  /* Image classifier demo */
+
+  .demo-dropzone{
+    border: 2px dashed var(--line);
+    border-radius: 8px;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 14.5px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    padding: 16px;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    overflow: hidden;
+  }
+
+  .demo-dropzone:hover,
+  .demo-dropzone.is-dragover{
+    border-color: var(--ochre);
+    background: #fbf3e2;
+  }
+
+  .demo-dropzone img{
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 6px;
+    object-fit: contain;
+  }
+
+  .demo-results{ margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+
+  .vision-result-row{
+    display: grid;
+    grid-template-columns: 1fr 3fr auto;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+  }
+
+  .vision-result-label{ color: var(--ink); text-transform: capitalize; }
+
+  .vision-result-bar-track{
+    height: 8px;
+    background: var(--bg-panel);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .vision-result-bar{
+    height: 100%;
+    background: var(--ochre);
+    border-radius: 999px;
+  }
+
+  .vision-result-pct{ color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+  /* Translator + semantic demo output */
+
+  .demo-output{
+    margin-top: 16px;
+    padding: 16px 18px;
+    background: var(--bg-panel);
+    border-radius: 6px;
+    font-size: 15.5px;
+    color: var(--ink);
+    min-height: 24px;
+  }
+
+  .semantic-score-track{
+    height: 10px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  .semantic-score-bar{
+    height: 100%;
+    background: var(--teal);
+    border-radius: 999px;
+    transition: width 0.6s ease;
+  }
+
+  .semantic-verdict{ margin: 0; font-size: 14.5px; color: var(--ink-muted); }
+
+  /* ---------------------------------- */
+  /* Research / featured projects        */
+  /* ---------------------------------- */
+
+  .featured-project{
+    padding: 36px 0;
+    border-top: 1px solid var(--line-soft);
+    display: grid;
+    gap: 18px;
+  }
+
+  .featured-project:last-child{ border-bottom: 1px solid var(--line-soft); }
+
+  .fp-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .fp-title{
+    font-family: var(--font-display);
+    font-size: 22px;
+    margin: 0;
+    color: var(--ink);
+  }
+
+  .fp-tag{ font-size: 13px; color: var(--ink-faint); }
+
+  .fp-desc{
+    color: var(--ink-muted);
+    max-width: 72ch;
+    font-size: 15.5px;
+    margin: 0;
+  }
+
+  .fp-desc strong{ color: var(--ink); font-weight: 500; }
+
+  .fp-meta{
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 13.5px;
+    color: var(--ink-faint);
+  }
+
+  .fp-stack span{ color: var(--ink-muted); }
+
+  .fp-stack span:not(:last-child)::after{
+    content: '\00b7';
+    color: var(--terracotta);
+    margin: 0 8px;
+  }
+
+  .fp-link{
+    color: var(--indigo);
+    text-decoration: none;
+    font-size: 14.5px;
+    border-bottom: 1px solid transparent;
+  }
+
+  .fp-link:hover{ border-bottom-color: var(--indigo); }
+
+  /* ---------------------------------- */
+  /* Academic projects: filter bar        */
+  /* ---------------------------------- */
+
+  .filter-bar{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+
+  .filter-btn{
+    font-family: var(--font-body);
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    color: var(--ink-muted);
+    font-size: 13.5px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+
+  .filter-btn:hover{ border-color: var(--terracotta); color: var(--ink); }
+
+  .filter-btn.is-active{
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bg);
+    font-weight: 500;
+  }
+
+  /* ---------------------------------- */
+  /* Academic projects: morphing grid     */
+  /* ---------------------------------- */
+
+  .morph-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+  }
+
+  .morph-card{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    text-decoration: none;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg-card);
+    will-change: transform, opacity;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.45s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .morph-card.in-view{ opacity: 1; transform: translateY(0); }
+
+  .morph-card:hover{
+    border-color: var(--ink);
+    box-shadow: 0 2px 0 var(--ink);
+  }
+
+  .category-dot{ width: 7px; height: 7px; border-radius: 50%; flex: none; }
+
+  .cat-search{ background: var(--terracotta); }
+  .cat-ml{ background: var(--indigo); }
+  .cat-nlp{ background: var(--teal); }
+  .cat-vision{ background: var(--ochre); }
+
+  .morph-title{ font-size: 15px; color: var(--ink); flex: 1 1 auto; }
+
+  .morph-cat{ font-size: 12px; color: var(--ink-faint); width: 100%; padding-left: 17px; }
+
+  .ref-note{ margin-top: 40px; font-size: 14px; color: var(--ink-faint); }
+
+  .ref-note a{ color: var(--terracotta); text-decoration: none; }
+
+  /* ---------------------------------- */
+  /* Contact / footer                    */
+  /* ---------------------------------- */
+
+  .contact-inner{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+
+  .contact-heading{
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(30px, 4vw, 44px);
+    margin: 0 0 16px 0;
+    max-width: 14ch;
+    color: var(--ink);
+  }
+
+  .contact-links{ display: flex; flex-direction: column; gap: 10px; }
+
+  .contact-links a{
+    text-decoration: none;
+    color: var(--ink-muted);
+    font-size: 16px;
+    transition: color 0.15s ease;
+  }
+
+  .contact-links a:hover{ color: var(--terracotta); }
+
+  footer.site-footer{
+    border-top: 1px solid var(--line-soft);
+    padding: 28px var(--edge) 40px;
+  }
+
+  .footer-inner{
+    max-width: var(--max-width);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--ink-faint);
+    font-size: 13.5px;
+  }
+
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-name">Dua Asghar Mughal</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a class="magnetic" href="#about">About</a></li>
+      <li><a class="magnetic" href="#skills">Skills</a></li>
+      <li><a class="magnetic" href="#demos">Demos</a></li>
+      <li><a class="magnetic" href="#research">Research</a></li>
+      <li><a class="magnetic" href="#projects">Projects</a></li>
+      <li><a class="magnetic" href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============================ HERO ============================ -->
+  <section class="hero" id="hero-section">
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow-location">Melbourne, Australia</div>
+        <h1>Dua Asghar<br>Mughal</h1>
+        <p class="hero-role">
+          I am an <strong>artificial intelligence engineer</strong> and <strong>machine learning engineer</strong> building computer vision, predictive analytics and generative AI systems that hold up in production, not only in notebooks.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-solid btn-pulse magnetic" href="#demos">Try a live demo</a>
+          <a class="btn btn-outline magnetic" href="https://github.com/duaasghar" target="_blank" rel="noopener">See my code on GitHub</a>
+        </div>
+        <div class="stat-row stagger">
+          <div class="stat">
+            <div class="stat-number">2+</div>
+            <div class="stat-label">years in applied machine learning</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">93.7%</div>
+            <div class="stat-label">precision on a deployed vision model</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">21.6M</div>
+            <div class="stat-label">sensor readings processed in one pipeline</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">4</div>
+            <div class="stat-label">live models running below, right in your browser</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="photo-frame" id="photo-frame">
+          <span class="photo-placeholder">DM</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ ABOUT ============================ -->
+  <section id="about">
+    <div class="wrap about-grid">
+      <div>
+        <p class="section-heading reveal" style="margin-bottom:0;">About</p>
+      </div>
+      <div class="about-copy stagger">
+        <p>
+          I am an artificial intelligence and machine learning engineer who builds systems that people actually get to use, not only notebooks that stop at a demo. My work spans computer vision, predictive analytics and retrieval based language systems, usually wired together with the unglamorous but essential parts, data pipelines, containerised deployment and monitoring, that decide whether a model survives contact with the real world.
+        </p>
+        <p>
+          I care about one thing above all, whether someone who is not a machine learning specialist can trust and actually use what I build. My background is rooted in Python, with hands on experience in <strong>PyTorch</strong>, <strong>XGBoost</strong>, <strong>Llama</strong>, <strong>Kubernetes</strong>, <strong>Docker</strong> and distributed event driven systems.
+        </p>
+        <p>
+          The four demos below are a small, honest sample of that work. Each one is a genuine model, not a mock up, running entirely inside your browser right now.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ============================ SKILLS ============================ -->
+  <section id="skills">
+    <div class="wrap">
+      <p class="section-heading reveal">Skills</p>
+      <p class="section-lede reveal">The tools I reach for most, grouped the way I actually use them day to day.</p>
+
+      <div class="skills-grid stagger">
+        <div class="skill-group">
+          <p class="skill-group-title">Artificial intelligence and machine learning</p>
+          <div class="skill-tags">
+            <span>Python</span><span>PyTorch</span><span>YOLOv8</span><span>XGBoost</span><span>Llama 3.1</span><span>Ollama</span><span>Predictive analytics</span><span>Forecasting</span><span>Computer vision</span><span>Agentic workflows</span><span>Tool based LLM assistants</span><span>Particle Swarm Optimisation</span><span>Principal Component Analysis</span><span>Feature selection</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <p class="skill-group-title">Data and backend</p>
+          <div class="skill-tags">
+            <span>SQL</span><span>PostgreSQL</span><span>SQLite</span><span>REST APIs</span><span>Data pipelines</span><span>Feature engineering</span><span>IoT and energy telemetry</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <p class="skill-group-title">Cloud and platforms</p>
+          <div class="skill-tags">
+            <span>AWS</span><span>GCP Vertex AI</span><span>Kubernetes</span><span>Docker</span><span>RabbitMQ</span><span>MQTT</span><span>CloudEvents</span><span>Knative</span><span>Event driven microservices</span><span>Digital twins</span><span>Apache Superset</span><span>Grafana</span><span>Git and GitHub</span>
+          </div>
+        </div>
+
+        <div class="skill-group">
+          <p class="skill-group-title">Communication</p>
+          <div class="skill-tags">
+            <span>Stakeholder engagement</span><span>Translating technical findings into business insight</span><span>Cross functional collaboration</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ============================ INTERACTIVE DEMOS ============================ -->
+  <section id="demos">
+    <div class="wrap">
+      <p class="section-heading reveal">Try it yourself</p>
+      <p class="section-lede reveal">Four small systems, each a genuine model running live in your browser through Hugging Face's Transformers.js. Nothing here touches a server, and nothing you type or upload leaves your device. The first time you use each one it needs to download a small model, so give it a few seconds.</p>
+
+      <div class="demo-tabs" role="tablist" aria-label="Choose a demo">
+        <button class="demo-tab is-active" data-demo="chat" role="tab" aria-selected="true">Ask about my work</button>
+        <button class="demo-tab" data-demo="vision" role="tab" aria-selected="false">Image classifier</button>
+        <button class="demo-tab" data-demo="translate" role="tab" aria-selected="false">Translator</button>
+        <button class="demo-tab" data-demo="semantic" role="tab" aria-selected="false">Semantic analyzer</button>
+      </div>
+
+      <div class="demo-panels">
+
+        <div class="demo-panel is-active" data-panel="chat">
+          <div class="demo-card demo-card-ml">
+            <p class="demo-desc">Ask a question about my projects, skills or background. This searches a small corpus of my own portfolio content by meaning, using sentence embeddings computed live in your browser, then shows you the most relevant passage rather than inventing an answer.</p>
+            <div class="demo-chat-log" id="chat-log"></div>
+            <form id="chat-form" class="demo-input-row">
+              <input type="text" id="chat-input" placeholder="Try: what do you use for computer vision" autocomplete="off">
+              <button type="submit" class="btn-demo magnetic">Ask</button>
+            </form>
+            <p class="demo-status" id="chat-status">Click into the box to load the search model, around 25MB, once only.</p>
+          </div>
+        </div>
+
+        <div class="demo-panel" data-panel="vision">
+          <div class="demo-card demo-card-vision">
+            <p class="demo-desc">Drop in a photo and a small vision model, running entirely on your device, will guess what it is looking at.</p>
+            <div class="demo-dropzone" id="vision-dropzone">
+              <input type="file" id="vision-input" accept="image/*" hidden>
+              <img id="vision-preview" alt="" hidden>
+              <span id="vision-placeholder">Click or drop an image here</span>
+            </div>
+            <button class="btn-demo magnetic" id="vision-run" disabled>Classify image</button>
+            <div class="demo-results" id="vision-results"></div>
+            <p class="demo-status" id="vision-status">Model loads on first use, around 14MB.</p>
+          </div>
+        </div>
+
+        <div class="demo-panel" data-panel="translate">
+          <div class="demo-card demo-card-nlp">
+            <p class="demo-desc">Type an English sentence and a small translation model, running entirely on your device, converts it into Urdu, French or Spanish.</p>
+            <select id="translate-lang">
+              <option value="ur">English to Urdu</option>
+              <option value="fr">English to French</option>
+              <option value="es">English to Spanish</option>
+            </select>
+            <textarea id="translate-input" rows="3" placeholder="Type an English sentence"></textarea>
+            <button class="btn-demo magnetic" id="translate-run">Translate</button>
+            <div class="demo-output" id="translate-output"></div>
+            <p class="demo-status" id="translate-status">Each language loads its own small model on first use.</p>
+          </div>
+        </div>
+
+        <div class="demo-panel" data-panel="semantic">
+          <div class="demo-card demo-card-nlp">
+            <p class="demo-desc">Enter two sentences and this estimates how close they are in meaning, not just in wording, using the same sentence embedding technique behind the search above.</p>
+            <textarea id="semantic-a" rows="2" placeholder="First sentence"></textarea>
+            <textarea id="semantic-b" rows="2" placeholder="Second sentence"></textarea>
+            <button class="btn-demo magnetic" id="semantic-run">Compare meaning</button>
+            <div class="demo-output" id="semantic-output" hidden></div>
+            <p class="demo-status" id="semantic-status">Loads the same small embedding model as the search above, around 25MB.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ============================ RESEARCH / FEATURED PROJECTS ============================ -->
+  <section id="research">
+    <div class="wrap">
+      <p class="section-heading reveal">Research and featured projects</p>
+      <p class="section-lede reveal">The two pieces of work I would point a recruiter to first, one on healthcare, one on language.</p>
+
+      <div class="featured-project reveal">
+        <div class="fp-top">
+          <p class="fp-title">Non invasive haemoglobin level detection</p>
+          <p class="fp-tag">Personal research project, 2024</p>
+        </div>
+        <p class="fp-desc">
+          A comparison of five machine learning models, <strong>Linear Regression, SVM, MLP, DNN and CNN</strong>, for predicting blood haemoglobin level from four wavelength PPG signals rather than a blood draw. I built the full pipeline myself, from raw signal feature extraction through ReliefF feature selection to Particle Swarm Optimisation for hyperparameter tuning, and found that a well tuned SVM matched or beat far more expensive deep learning models on this small, noisy, real world medical dataset.
+        </p>
+        <div class="fp-meta fp-stack">
+          <span>Python</span><span>scikit learn</span><span>TensorFlow and Keras</span><span>ReliefF</span><span>Particle Swarm Optimisation</span>
+        </div>
+        <a class="fp-link magnetic" href="https://github.com/duaasghar/non-invasive-haemoglobin-detection" target="_blank" rel="noopener">View the repository</a>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ============================ ACADEMIC PROJECTS REFERENCE ============================ -->
+  <section id="projects">
+    <div class="wrap">
+      <p class="section-heading reveal">A closer look at the fundamentals</p>
+      <p class="section-lede reveal">Sixteen smaller projects from my coursework, kept here because good engineers still return to first principles. Filter by theme to see how each one fits together.</p>
+
+      <div class="filter-bar" role="tablist" aria-label="Filter projects by theme">
+        <button class="filter-btn magnetic is-active" data-filter="all" role="tab" aria-selected="true">All projects</button>
+        <button class="filter-btn magnetic" data-filter="search" role="tab" aria-selected="false">Search and optimisation</button>
+        <button class="filter-btn magnetic" data-filter="ml" role="tab" aria-selected="false">Machine learning and reasoning</button>
+        <button class="filter-btn magnetic" data-filter="nlp" role="tab" aria-selected="false">Natural language processing</button>
+        <button class="filter-btn magnetic" data-filter="vision" role="tab" aria-selected="false">Computer vision</button>
+      </div>
+
+      <div class="morph-grid" id="morph-grid">
+        <a class="morph-card" data-category="search" href="https://github.com/duaasghar/ai-projects/tree/main/search/route-planning" target="_blank" rel="noopener">
+          <span class="category-dot cat-search"></span><span class="morph-title">Route planning</span><span class="morph-cat">Search and optimisation</span>
+        </a>
+        <a class="morph-card" data-category="search" href="https://github.com/duaasghar/ai-projects/tree/main/search/eight-puzzle-solver" target="_blank" rel="noopener">
+          <span class="category-dot cat-search"></span><span class="morph-title">Eight puzzle solver</span><span class="morph-cat">Search and optimisation</span>
+        </a>
+        <a class="morph-card" data-category="search" href="https://github.com/duaasghar/ai-projects/tree/main/search/maze-solver" target="_blank" rel="noopener">
+          <span class="category-dot cat-search"></span><span class="morph-title">Maze solver</span><span class="morph-cat">Search and optimisation</span>
+        </a>
+        <a class="morph-card" data-category="search" href="https://github.com/duaasghar/ai-projects/tree/main/search/traveling-salesman" target="_blank" rel="noopener">
+          <span class="category-dot cat-search"></span><span class="morph-title">Traveling salesman problem</span><span class="morph-cat">Search and optimisation</span>
+        </a>
+
+        <a class="morph-card" data-category="ml" href="https://github.com/duaasghar/ai-projects/tree/main/ml/iris-classification" target="_blank" rel="noopener">
+          <span class="category-dot cat-ml"></span><span class="morph-title">Iris classification</span><span class="morph-cat">Machine learning and reasoning</span>
+        </a>
+        <a class="morph-card" data-category="ml" href="https://github.com/duaasghar/ai-projects/tree/main/ml/diabetes-diagnosis" target="_blank" rel="noopener">
+          <span class="category-dot cat-ml"></span><span class="morph-title">Diabetes diagnosis</span><span class="morph-cat">Machine learning and reasoning</span>
+        </a>
+        <a class="morph-card" data-category="ml" href="https://github.com/duaasghar/ai-projects/tree/main/ml/monty-hall-bayesian-network" target="_blank" rel="noopener">
+          <span class="category-dot cat-ml"></span><span class="morph-title">Monty Hall problem</span><span class="morph-cat">Machine learning and reasoning</span>
+        </a>
+        <a class="morph-card" data-category="ml" href="https://github.com/duaasghar/ai-projects/tree/main/ml/tipping-problem" target="_blank" rel="noopener">
+          <span class="category-dot cat-ml"></span><span class="morph-title">Tipping problem</span><span class="morph-cat">Machine learning and reasoning</span>
+        </a>
+        <a class="morph-card" data-category="ml" href="https://github.com/duaasghar/ai-projects/tree/main/ml/project-risk-assessment" target="_blank" rel="noopener">
+          <span class="category-dot cat-ml"></span><span class="morph-title">Project risk assessment</span><span class="morph-cat">Machine learning and reasoning</span>
+        </a>
+        <a class="morph-card" data-category="ml" href="https://github.com/duaasghar/ai-projects/tree/main/ml/washing-machine-controller" target="_blank" rel="noopener">
+          <span class="category-dot cat-ml"></span><span class="morph-title">Washing machine controller</span><span class="morph-cat">Machine learning and reasoning</span>
+        </a>
+
+        <a class="morph-card" data-category="nlp" href="https://github.com/duaasghar/ai-projects/tree/main/nlp/sentiment-analysis" target="_blank" rel="noopener">
+          <span class="category-dot cat-nlp"></span><span class="morph-title">Sentiment analysis</span><span class="morph-cat">Natural language processing</span>
+        </a>
+        <a class="morph-card" data-category="nlp" href="https://github.com/duaasghar/ai-projects/tree/main/nlp/text-classification" target="_blank" rel="noopener">
+          <span class="category-dot cat-nlp"></span><span class="morph-title">Text classification</span><span class="morph-cat">Natural language processing</span>
+        </a>
+        <a class="morph-card" data-category="nlp" href="https://github.com/duaasghar/ai-projects/tree/main/nlp/topic-modelling" target="_blank" rel="noopener">
+          <span class="category-dot cat-nlp"></span><span class="morph-title">Topic modelling</span><span class="morph-cat">Natural language processing</span>
+        </a>
+
+        <a class="morph-card" data-category="vision" href="https://github.com/duaasghar/ai-projects/tree/main/vision/face-detection" target="_blank" rel="noopener">
+          <span class="category-dot cat-vision"></span><span class="morph-title">Face detection</span><span class="morph-cat">Computer vision</span>
+        </a>
+        <a class="morph-card" data-category="vision" href="https://github.com/duaasghar/ai-projects/tree/main/vision/image-segmentation" target="_blank" rel="noopener">
+          <span class="category-dot cat-vision"></span><span class="morph-title">Image segmentation</span><span class="morph-cat">Computer vision</span>
+        </a>
+        <a class="morph-card" data-category="vision" href="https://github.com/duaasghar/ai-projects/tree/main/vision/object-recognition" target="_blank" rel="noopener">
+          <span class="category-dot cat-vision"></span><span class="morph-title">Object recognition</span><span class="morph-cat">Computer vision</span>
+        </a>
+      </div>
+
+      <p class="ref-note">All sixteen live together in one repository, <a href="https://github.com/duaasghar/ai-projects" target="_blank" rel="noopener">duaasghar/ai-projects</a>, organised by theme.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ============================ CONTACT ============================ -->
+  <section id="contact">
+    <div class="wrap contact-inner">
+      <p class="contact-heading reveal">Let us build something worth deploying.</p>
+      <div class="contact-links stagger">
+        <a class="magnetic" href="mailto:duaasghar.mughal00@gmail.com">duaasghar.mughal00@gmail.com</a>
+        <a class="magnetic" href="https://github.com/duaasghar" target="_blank" rel="noopener">github.com/duaasghar</a>
+        <a class="magnetic" href="https://www.linkedin.com/in/duaasgharmughal/" target="_blank" rel="noopener">linkedin.com/in/duaasgharmughal</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>Dua Asghar Mughal, Melbourne, Australia</span>
+    <span id="year"></span>
+  </div>
+</footer>
+
+<script>
+
+  // ---------------------------------------------
+  // Mobile nav toggle
+  // ---------------------------------------------
+  var navToggle = document.getElementById('nav-toggle');
+  var navLinks = document.getElementById('nav-links');
+  navToggle.addEventListener('click', function(){
+    var isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  });
+  navLinks.querySelectorAll('a').forEach(function(link){
+    link.addEventListener('click', function(){
+      navLinks.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  // ---------------------------------------------
+  // Footer year
+  // ---------------------------------------------
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ---------------------------------------------
+  // Shared reduced motion flag
+  // ---------------------------------------------
+  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---------------------------------------------
+  // Particle network engine, used for both the bold
+  // animated hero and the quiet ambient background
+  // that runs behind the rest of the page. Motion is
+  // continuous, not triggered by scroll or hover, and
+  // particles in the hero react when the cursor gets
+  // close to them.
+  // ---------------------------------------------
+  function createParticleNetwork(canvas, options){
+    var ctx = canvas.getContext('2d');
+    var settings = Object.assign({
+      count: 70,
+      colors: ['#b8481d', '#33418c', '#0f7a68', '#a6790a'],
+      maxSpeed: 0.25,
+      radiusRange: [1.4, 3],
+      linkDistance: 130,
+      linkOpacity: 0.16,
+      particleOpacity: 0.75,
+      mouseRepel: false,
+      repelRadius: 140,
+      fullWindow: false
+    }, options || {});
+
+    var particles = [];
+    var width = 0, height = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var mouseX = -9999, mouseY = -9999;
+    var rafId = null;
+
+    function getBounds(){
+      if (settings.fullWindow) return { w: window.innerWidth, h: window.innerHeight };
+      var rect = canvas.parentElement.getBoundingClientRect();
+      return { w: rect.width, h: rect.height };
+    }
+
+    function resize(){
+      var bounds = getBounds();
+      width = bounds.w;
+      height = bounds.h;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function makeParticles(){
+      particles = [];
+      for (var i = 0; i < settings.count; i++){
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * settings.maxSpeed,
+          vy: (Math.random() - 0.5) * settings.maxSpeed,
+          r: settings.radiusRange[0] + Math.random() * (settings.radiusRange[1] - settings.radiusRange[0]),
+          color: settings.colors[i % settings.colors.length]
+        });
+      }
+    }
+
+    function step(){
+      ctx.clearRect(0, 0, width, height);
+
+      for (var i = 0; i < particles.length; i++){
+        var p = particles[i];
+
+        if (settings.mouseRepel){
+          var dx = p.x - mouseX;
+          var dy = p.y - mouseY;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < settings.repelRadius){
+            var force = (1 - dist / settings.repelRadius) * 0.6;
+            p.vx += (dx / (dist || 1)) * force;
+            p.vy += (dy / (dist || 1)) * force;
+          }
+        }
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // cap speed so repeated cursor pushes cannot accelerate a
+        // particle forever, without ever fully damping it to a stop
+        var speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+        var maxAllowed = settings.maxSpeed * 5;
+        if (speed > maxAllowed){
+          p.vx = (p.vx / speed) * maxAllowed;
+          p.vy = (p.vy / speed) * maxAllowed;
+        } else if (speed < settings.maxSpeed * 0.3){
+          // keep a small floor of motion so particles never sit still
+          var angle = Math.atan2(p.vy, p.vx) || Math.random() * Math.PI * 2;
+          p.vx = Math.cos(angle) * settings.maxSpeed * 0.3;
+          p.vy = Math.sin(angle) * settings.maxSpeed * 0.3;
+        }
+
+        if (p.x < 0 || p.x > width) p.vx *= -1;
+        if (p.y < 0 || p.y > height) p.vy *= -1;
+        p.x = Math.max(0, Math.min(width, p.x));
+        p.y = Math.max(0, Math.min(height, p.y));
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = settings.particleOpacity;
+        ctx.fill();
+      }
+
+      if (settings.linkDistance > 0){
+        ctx.globalAlpha = 1;
+        for (var a = 0; a < particles.length; a++){
+          for (var b = a + 1; b < particles.length; b++){
+            var pa = particles[a], pb = particles[b];
+            var ddx = pa.x - pb.x, ddy = pa.y - pb.y;
+            var d = Math.sqrt(ddx * ddx + ddy * ddy);
+            if (d < settings.linkDistance){
+              ctx.strokeStyle = pa.color;
+              ctx.globalAlpha = settings.linkOpacity * (1 - d / settings.linkDistance);
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(pa.x, pa.y);
+              ctx.lineTo(pb.x, pb.y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      ctx.globalAlpha = 1;
+      rafId = requestAnimationFrame(step);
+    }
+
+    resize();
+    makeParticles();
+
+    if (settings.mouseRepel){
+      var moveTarget = settings.fullWindow ? window : canvas.parentElement;
+      moveTarget.addEventListener('mousemove', function(e){
+        var rect = canvas.getBoundingClientRect();
+        mouseX = e.clientX - rect.left;
+        mouseY = e.clientY - rect.top;
+      }, { passive: true });
+      moveTarget.addEventListener('mouseleave', function(){
+        mouseX = -9999;
+        mouseY = -9999;
+      });
+    }
+
+    window.addEventListener('resize', function(){
+      resize();
+      makeParticles();
+    });
+
+    if (prefersReducedMotion){
+      step();
+      cancelAnimationFrame(rafId); // draw exactly one still frame, then stop
+    } else {
+      step();
+    }
+  }
+
+  var CATEGORY_COLORS = ['#b8481d', '#33418c', '#0f7a68', '#a6790a'];
+
+  createParticleNetwork(document.getElementById('hero-canvas'), {
+    count: 60,
+    colors: CATEGORY_COLORS,
+    maxSpeed: 0.3,
+    linkDistance: 140,
+    linkOpacity: 0.22,
+    particleOpacity: 0.85,
+    mouseRepel: true,
+    repelRadius: 150
+  });
+
+  createParticleNetwork(document.getElementById('bg-canvas'), {
+    count: 26,
+    colors: CATEGORY_COLORS,
+    maxSpeed: 0.12,
+    linkDistance: 0,
+    particleOpacity: 0.14,
+    mouseRepel: false,
+    fullWindow: true
+  });
+
+
+  // ---------------------------------------------
+  // Scroll reveal
+  // ---------------------------------------------
+  (function(){
+    var revealTargets = document.querySelectorAll('.reveal, .stagger');
+    if (!revealTargets.length) return;
+
+    if (prefersReducedMotion){
+      revealTargets.forEach(function(el){ el.classList.add('in-view'); });
+      return;
+    }
+
+    document.querySelectorAll('.stagger').forEach(function(group){
+      Array.prototype.forEach.call(group.children, function(child, i){
+        child.style.setProperty('--i', i);
+      });
+    });
+
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+
+    revealTargets.forEach(function(el){ observer.observe(el); });
+  })();
+
+  // ---------------------------------------------
+  // Magnetic buttons and links
+  // ---------------------------------------------
+  (function(){
+    var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (!canHover || prefersReducedMotion) return;
+
+    var magnets = document.querySelectorAll('.magnetic');
+    if (!magnets.length) return;
+
+    var strength = 0.4;
+    var reach = 60;
+
+    document.addEventListener('mousemove', function(e){
+      magnets.forEach(function(el){
+        var rect = el.getBoundingClientRect();
+        var centerX = rect.left + rect.width / 2;
+        var centerY = rect.top + rect.height / 2;
+        var dx = e.clientX - centerX;
+        var dy = e.clientY - centerY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var activation = Math.max(rect.width, rect.height) / 2 + reach;
+
+        if (dist < activation){
+          var pull = 1 - dist / activation;
+          el.style.transform = 'translate(' + (dx * strength * pull).toFixed(1) + 'px, ' + (dy * strength * pull).toFixed(1) + 'px)';
+        } else if (el.style.transform){
+          el.style.transform = '';
+        }
+      });
+    }, { passive: true });
+
+    document.addEventListener('mouseleave', function(){
+      magnets.forEach(function(el){ el.style.transform = ''; });
+    });
+  })();
+
+  // ---------------------------------------------
+  // Demo tab switching
+  // ---------------------------------------------
+  (function(){
+    var demoTabs = document.querySelectorAll('.demo-tab');
+    var demoPanels = document.querySelectorAll('.demo-panel');
+    demoTabs.forEach(function(tab){
+      tab.addEventListener('click', function(){
+        demoTabs.forEach(function(t){ t.classList.remove('is-active'); t.setAttribute('aria-selected', 'false'); });
+        demoPanels.forEach(function(p){ p.classList.remove('is-active'); });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        document.querySelector('.demo-panel[data-panel="' + tab.dataset.demo + '"]').classList.add('is-active');
+      });
+    });
+  })();
+
+  // ---------------------------------------------
+  // Filterable, morphing project grid
+  // ---------------------------------------------
+  (function(){
+    var grid = document.getElementById('morph-grid');
+    if (!grid) return;
+
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.morph-card'));
+    var filterButtons = document.querySelectorAll('.filter-btn');
+
+    if (prefersReducedMotion){
+      cards.forEach(function(card){ card.classList.add('in-view'); });
+    } else {
+      var gridObserver = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting){
+            cards.forEach(function(card, i){
+              setTimeout(function(){ card.classList.add('in-view'); }, i * 45);
+            });
+            gridObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      gridObserver.observe(grid);
+    }
+
+    function applyFilter(category){
+      var firstRects = new Map();
+      cards.forEach(function(card){
+        if (card.style.display !== 'none'){ firstRects.set(card, card.getBoundingClientRect()); }
+      });
+
+      cards.forEach(function(card){
+        var willShow = category === 'all' || card.dataset.category === category;
+        card.dataset.willShow = willShow ? '1' : '0';
+        card.style.display = '';
+      });
+
+      void grid.offsetHeight;
+      var lastRects = new Map();
+      cards.forEach(function(card){
+        if (card.dataset.willShow === '1'){ lastRects.set(card, card.getBoundingClientRect()); }
+      });
+
+      cards.forEach(function(card){
+        var first = firstRects.get(card);
+        var last = lastRects.get(card);
+
+        if (first && last){
+          var dx = first.left - last.left;
+          var dy = first.top - last.top;
+          if (dx || dy){
+            card.style.transition = 'none';
+            card.style.transform = 'translate(' + dx + 'px, ' + dy + 'px)';
+            requestAnimationFrame(function(){
+              card.style.transition = 'transform 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.35s ease';
+              card.style.transform = '';
+            });
+          }
+        } else if (!first && last){
+          card.style.transition = 'none';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.85)';
+          requestAnimationFrame(function(){
+            card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+          });
+        } else if (first && !last){
+          card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.85)';
+          setTimeout(function(){
+            if (card.dataset.willShow === '0'){ card.style.display = 'none'; }
+          }, 300);
+        }
+      });
+    }
+
+    filterButtons.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        filterButtons.forEach(function(b){ b.classList.remove('is-active'); b.setAttribute('aria-selected', 'false'); });
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-selected', 'true');
+        applyFilter(btn.dataset.filter);
+      });
+    });
+  })();
+
+</script>
+
+<script type="module">
+
+  // The Transformers.js library is loaded dynamically rather than with a
+  // static import, on purpose. A static import at the top of a module
+  // fails the entire module if it cannot load for any reason, silently
+  // breaking every demo including simple tab switching. Loading it lazily
+  // inside a function means a network hiccup only affects the specific
+  // action someone takes, with a clear message, rather than the whole
+  // section going quietly dead.
+  var transformersModule = null;
+  var transformersLoadPromise = null;
+
+  function loadTransformers(){
+    if (!transformersLoadPromise){
+      transformersLoadPromise = import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3')
+        .then(function(mod){
+          mod.env.allowLocalModels = false;
+          transformersModule = mod;
+          return mod;
+        })
+        .catch(function(err){
+          transformersLoadPromise = null; // allow a retry on the next attempt
+          throw err;
+        });
+    }
+    return transformersLoadPromise;
+  }
+
+  // ---------------------------------------------
+  // Shared embedding pipeline, used by the portfolio
+  // search chat and the semantic analyzer
+  // ---------------------------------------------
+  var embedderPromise = null;
+  function getEmbedder(onProgress){
+    if (!embedderPromise){
+      embedderPromise = loadTransformers().then(function(mod){
+        return mod.pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', { progress_callback: onProgress });
+      }).catch(function(err){
+        embedderPromise = null; // allow a retry on the next attempt
+        throw err;
+      });
+    }
+    return embedderPromise;
+  }
+
+  function cosineSimilarity(a, b){
+    var dot = 0, normA = 0, normB = 0;
+    for (var i = 0; i < a.length; i++){
+      dot += a[i] * b[i];
+      normA += a[i] * a[i];
+      normB += b[i] * b[i];
+    }
+    return dot / (Math.sqrt(normA) * Math.sqrt(normB));
+  }
+
+  function describeProgress(progress){
+    if (progress && progress.status === 'progress' && typeof progress.progress === 'number'){
+      return Math.round(progress.progress) + '%';
+    }
+    return null;
+  }
+
+  // ---------------------------------------------
+  // Portfolio knowledge base for "ask about my work"
+  // ---------------------------------------------
+  var KNOWLEDGE_BASE = [
+    "I am an AI and machine learning engineer with more than two years of experience building and deploying computer vision, predictive machine learning and large language model based agentic systems.",
+    "I built a YOLOv8 computer vision system for automated road hazard detection, including a proprietary image acquisition, labelling and preprocessing pipeline, reaching 93.7 percent detection precision.",
+    "I developed a cloud native digital twin platform for industrial building energy management across fourteen buildings and operational zones, hosted on Kubernetes with event processing and historical data storage.",
+    "I integrated IoT telemetry into a digital twin platform using MQTT, RabbitMQ and CloudEvents, feeding real time and historical data into downstream analytics services.",
+    "I engineered an industrial energy analytics pipeline covering more than 21.6 million sensor measurements across 89 pieces of equipment and 127 measurement types.",
+    "I built a multi stage data quality pipeline that identified around 296 thousand anomalous readings and produced more than 1.1 million validated power observations.",
+    "I developed an XGBoost energy prediction pipeline, engineering temporal and operational features for predictive building energy optimisation.",
+    "I built a Llama 3.1 and Ollama based AI energy copilot with tool based workflows, letting non technical stakeholders query building and equipment energy data using natural language.",
+    "I designed an AI recommendation agent for energy optimisation, detecting consumption anomalies and power factor issues, surfaced through business intelligence dashboards.",
+    "For my dissertation I built and compared five machine learning models, Linear Regression, SVM, MLP, DNN and CNN, for non invasive haemoglobin prediction from PPG signals, tuned with Particle Swarm Optimisation and ReliefF feature selection.",
+    "My core artificial intelligence and machine learning skills include Python, PyTorch, YOLOv8, XGBoost, Llama 3.1, Ollama, predictive analytics, forecasting, computer vision, agentic workflows, tool based LLM assistants, Particle Swarm Optimisation, Principal Component Analysis and feature selection.",
+    "My data and backend skills include SQL, PostgreSQL, SQLite, REST APIs, data pipelines, feature engineering and IoT and energy telemetry.",
+    "My cloud and platform skills include AWS, GCP Vertex AI, Kubernetes, Docker, RabbitMQ, MQTT, CloudEvents, Knative, event driven microservices, digital twins, Apache Superset, Grafana, Git and GitHub.",
+    "I have built search algorithm projects including route planning, an eight puzzle solver, a maze solver and the travelling salesman problem solved with a genetic algorithm.",
+    "I have built classical machine learning projects including iris classification, diabetes diagnosis and a Bayesian network solving the Monty Hall problem.",
+    "I have built fuzzy logic systems including a restaurant tipping calculator, a project risk assessment tool and a washing machine controller.",
+    "I have built natural language processing projects including sentiment analysis, text classification and topic modelling.",
+    "I have built computer vision projects including face detection, image segmentation and object recognition.",
+    "I care about building systems that people who are not machine learning specialists can actually trust and use, and I am comfortable across the full lifecycle from data engineering to containerised deployment."
+  ];
+
+  var corpusEmbeddings = null;
+
+  async function ensureCorpusEmbedded(onProgress){
+    if (corpusEmbeddings) return corpusEmbeddings;
+    var embedder = await getEmbedder(onProgress);
+    var output = await embedder(KNOWLEDGE_BASE, { pooling: 'mean', normalize: true });
+    var vectors = output.tolist();
+    corpusEmbeddings = KNOWLEDGE_BASE.map(function(text, i){ return { text: text, vector: vectors[i] }; });
+    return corpusEmbeddings;
+  }
+
+  async function searchKnowledgeBase(query){
+    await ensureCorpusEmbedded();
+    var embedder = await getEmbedder();
+    var output = await embedder(query, { pooling: 'mean', normalize: true });
+    var queryVector = output.tolist()[0];
+    var scored = corpusEmbeddings.map(function(item){
+      return { text: item.text, score: cosineSimilarity(queryVector, item.vector) };
+    });
+    scored.sort(function(a, b){ return b.score - a.score; });
+    return scored.slice(0, 3);
+  }
+
+  // ---- Chat UI wiring ----
+  var chatForm = document.getElementById('chat-form');
+  var chatInput = document.getElementById('chat-input');
+  var chatLog = document.getElementById('chat-log');
+  var chatStatus = document.getElementById('chat-status');
+  var chatReady = false;
+
+  function appendChatMessage(who, text){
+    var bubble = document.createElement('div');
+    bubble.className = 'chat-bubble chat-bubble-' + who;
+    bubble.textContent = text;
+    chatLog.appendChild(bubble);
+    chatLog.scrollTop = chatLog.scrollHeight;
+  }
+
+  async function prepareChat(){
+    if (chatReady) return;
+    chatStatus.textContent = 'Loading the search model...';
+    await ensureCorpusEmbedded(function(p){
+      var pct = describeProgress(p);
+      if (pct) chatStatus.textContent = 'Loading the search model... ' + pct;
+    });
+    chatReady = true;
+    chatStatus.textContent = 'Ready. Ask a question about my work.';
+  }
+
+  chatInput.addEventListener('focus', function once(){
+    prepareChat();
+    chatInput.removeEventListener('focus', once);
+  });
+
+  chatForm.addEventListener('submit', async function(e){
+    e.preventDefault();
+    var question = chatInput.value.trim();
+    if (!question) return;
+    appendChatMessage('you', question);
+    chatInput.value = '';
+    chatInput.disabled = true;
+    chatStatus.textContent = chatReady ? 'Searching...' : 'Loading the search model, this can take a few seconds the first time...';
+    try {
+      await prepareChat();
+      var results = await searchKnowledgeBase(question);
+      if (!results.length || results[0].score < 0.2){
+        appendChatMessage('bot', "I do not have a direct answer to that in my portfolio content yet. Try asking about my projects, my skills, or my experience.");
+      } else {
+        appendChatMessage('bot', results[0].text);
+      }
+      chatStatus.textContent = 'Ready. Ask another question.';
+    } catch(err){
+      console.error(err);
+      chatStatus.textContent = 'Something went wrong loading the model. Please try again in a moment.';
+    } finally {
+      chatInput.disabled = false;
+      chatInput.focus();
+    }
+  });
+
+  // ---------------------------------------------
+  // Image classifier
+  // ---------------------------------------------
+  var visionDropzone = document.getElementById('vision-dropzone');
+  var visionInput = document.getElementById('vision-input');
+  var visionPreview = document.getElementById('vision-preview');
+  var visionPlaceholder = document.getElementById('vision-placeholder');
+  var visionRunBtn = document.getElementById('vision-run');
+  var visionResults = document.getElementById('vision-results');
+  var visionStatus = document.getElementById('vision-status');
+  var currentImageURL = null;
+  var classifierPromise = null;
+
+  function getClassifier(onProgress){
+    if (!classifierPromise){
+      classifierPromise = loadTransformers().then(function(mod){
+        return mod.pipeline('image-classification', 'Xenova/mobilenet_v2_1.0_224', { progress_callback: onProgress });
+      }).catch(function(err){
+        classifierPromise = null;
+        throw err;
+      });
+    }
+    return classifierPromise;
+  }
+
+  visionDropzone.addEventListener('click', function(){ visionInput.click(); });
+  visionDropzone.addEventListener('dragover', function(e){ e.preventDefault(); visionDropzone.classList.add('is-dragover'); });
+  visionDropzone.addEventListener('dragleave', function(){ visionDropzone.classList.remove('is-dragover'); });
+  visionDropzone.addEventListener('drop', function(e){
+    e.preventDefault();
+    visionDropzone.classList.remove('is-dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleImageFile(e.dataTransfer.files[0]);
+  });
+  visionInput.addEventListener('change', function(){
+    if (visionInput.files && visionInput.files[0]) handleImageFile(visionInput.files[0]);
+  });
+
+  function handleImageFile(file){
+    if (!file.type.startsWith('image/')) return;
+    currentImageURL = URL.createObjectURL(file);
+    visionPreview.src = currentImageURL;
+    visionPreview.hidden = false;
+    visionPlaceholder.hidden = true;
+    visionRunBtn.disabled = false;
+    visionResults.innerHTML = '';
+  }
+
+  visionRunBtn.addEventListener('click', async function(){
+    if (!currentImageURL) return;
+    visionRunBtn.disabled = true;
+    visionStatus.textContent = 'Loading the vision model...';
+    try {
+      var classifier = await getClassifier(function(p){
+        var pct = describeProgress(p);
+        if (pct) visionStatus.textContent = 'Loading the vision model... ' + pct;
+      });
+      visionStatus.textContent = 'Looking at your image...';
+      var output = await classifier(currentImageURL, { topk: 5 });
+      renderVisionResults(output);
+      visionStatus.textContent = 'Done. Try another image any time.';
+    } catch(err){
+      console.error(err);
+      visionStatus.textContent = 'Something went wrong running the model. Please try again.';
+    } finally {
+      visionRunBtn.disabled = false;
+    }
+  });
+
+  function renderVisionResults(predictions){
+    visionResults.innerHTML = '';
+    predictions.forEach(function(p){
+      var pct = Math.round(p.score * 100);
+      var row = document.createElement('div');
+      row.className = 'vision-result-row';
+      row.innerHTML = '<span class="vision-result-label">' + p.label + '</span>' +
+        '<span class="vision-result-bar-track"><span class="vision-result-bar" style="width:' + pct + '%"></span></span>' +
+        '<span class="vision-result-pct">' + pct + '%</span>';
+      visionResults.appendChild(row);
+    });
+  }
+
+  // ---------------------------------------------
+  // Translator
+  // ---------------------------------------------
+  var translateLangSelect = document.getElementById('translate-lang');
+  var translateInput = document.getElementById('translate-input');
+  var translateRunBtn = document.getElementById('translate-run');
+  var translateOutput = document.getElementById('translate-output');
+  var translateStatus = document.getElementById('translate-status');
+
+  var TRANSLATE_MODELS = {
+    ur: 'Xenova/opus-mt-en-ur',
+    fr: 'Xenova/opus-mt-en-fr',
+    es: 'Xenova/opus-mt-en-es'
+  };
+  var translatorCache = {};
+
+  function getTranslator(lang, onProgress){
+    if (!translatorCache[lang]){
+      translatorCache[lang] = loadTransformers().then(function(mod){
+        return mod.pipeline('translation', TRANSLATE_MODELS[lang], { progress_callback: onProgress });
+      }).catch(function(err){
+        delete translatorCache[lang];
+        throw err;
+      });
+    }
+    return translatorCache[lang];
+  }
+
+  translateRunBtn.addEventListener('click', async function(){
+    var text = translateInput.value.trim();
+    if (!text) return;
+    var lang = translateLangSelect.value;
+    translateRunBtn.disabled = true;
+    translateOutput.textContent = '';
+    translateStatus.textContent = 'Loading the translation model for this language...';
+    try {
+      var translator = await getTranslator(lang, function(p){
+        var pct = describeProgress(p);
+        if (pct) translateStatus.textContent = 'Loading the translation model... ' + pct;
+      });
+      translateStatus.textContent = 'Translating...';
+      var result = await translator(text);
+      translateOutput.textContent = result[0].translation_text;
+      translateStatus.textContent = 'Done.';
+    } catch(err){
+      console.error(err);
+      delete translatorCache[lang];
+      translateStatus.textContent = 'This language pair could not be loaded just now. Please try French or Spanish, or try again shortly.';
+    } finally {
+      translateRunBtn.disabled = false;
+    }
+  });
+
+  // ---------------------------------------------
+  // Semantic analyzer
+  // ---------------------------------------------
+  var semanticA = document.getElementById('semantic-a');
+  var semanticB = document.getElementById('semantic-b');
+  var semanticRunBtn = document.getElementById('semantic-run');
+  var semanticOutput = document.getElementById('semantic-output');
+  var semanticStatus = document.getElementById('semantic-status');
+
+  semanticRunBtn.addEventListener('click', async function(){
+    var textA = semanticA.value.trim();
+    var textB = semanticB.value.trim();
+    if (!textA || !textB) return;
+    semanticRunBtn.disabled = true;
+    semanticStatus.textContent = 'Loading the embedding model...';
+    try {
+      var embedder = await getEmbedder(function(p){
+        var pct = describeProgress(p);
+        if (pct) semanticStatus.textContent = 'Loading the embedding model... ' + pct;
+      });
+      semanticStatus.textContent = 'Comparing meaning...';
+      var output = await embedder([textA, textB], { pooling: 'mean', normalize: true });
+      var vectors = output.tolist();
+      var similarity = cosineSimilarity(vectors[0], vectors[1]);
+      renderSemanticResult(similarity);
+      semanticStatus.textContent = 'Done.';
+    } catch(err){
+      console.error(err);
+      semanticStatus.textContent = 'Something went wrong. Please try again.';
+    } finally {
+      semanticRunBtn.disabled = false;
+    }
+  });
+
+  function renderSemanticResult(score){
+    var pct = Math.round(((score + 1) / 2) * 100);
+    var verdict;
+    if (score > 0.75) verdict = 'These mean very similar things.';
+    else if (score > 0.5) verdict = 'These are related in meaning.';
+    else if (score > 0.25) verdict = 'These share a little meaning in common.';
+    else verdict = 'These mean quite different things.';
+    semanticOutput.hidden = false;
+    semanticOutput.innerHTML = '<div class="semantic-score-track"><div class="semantic-score-bar" style="width:' + pct + '%"></div></div>' +
+      '<p class="semantic-verdict">' + verdict + ' (similarity score ' + score.toFixed(2) + ')</p>';
+  }
+
+</script>
+
+</body>
+</html>
